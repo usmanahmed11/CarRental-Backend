@@ -16,17 +16,18 @@ class NewUserController extends Controller
 {
     public function register(Request $request)
     {
+        // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
             'password' => ['required', 'string', 'min:8'],
             'role_id' => 'required|exists:roles,id',
         ]);
-
+        // If validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
+        // Find the role based on the given role_id
         $role = Role::find($request->role_id);
 
         // validate that the role exists
@@ -40,30 +41,41 @@ class NewUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
-
+        // Set the user's role_id and save the user
         $user->role_id = $request->role_id;
         $user->save();
 
+        // Create a token for the user and save it
         $token = $user->createToken('authToken')->accessToken;
         $user->remember_token = $token;
         $user->save();
-        
-        // send activation email
+
+        // Send an activation email to the user
         Mail::to($user->email)->send(new UserActivationEmail($token));
+
+        // Return a success response with a message
+
         return response()->json(['message' => 'Account Created Successfully Please Verify The Mail For Login'], 200);
     }
 
 
     public function index()
     {
+        // Get all the roles using the Role model
         $roles = Role::all();
+
+        // Return the roles as a JSON response
         return response()->json($roles);
     }
     public function getEmail($id)
     {
+        // Retrieve the user with the given ID, or throw an exception if it doesn't exist
         $user = User::findOrFail($id);
+
+        // Retrieve the role associated with the user's role ID, or throw an exception if it doesn't exist
         $role = Role::findOrFail($user->role_id);
 
+        // Return the email and user information as a JSON response
         return response()->json([
             'email' => $user->email,
             'name' => $user->name,
@@ -75,11 +87,12 @@ class NewUserController extends Controller
 
     public function activateAccount(Request $request)
     {
+        // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'password_confirmation' => ['required', 'same:password'],
         ]);
-
+        // If validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' =>  $validator->errors()], 400);
         }
@@ -92,39 +105,42 @@ class NewUserController extends Controller
             return response()->json(['error' => 'Invalid activation link.'], 400);
         }
 
-        // Update the user's password and set the activation token to null
-
+        // Update the user's password, set the activation token to null, and mark their email as verified
         $user->password = Hash::make($request->password);
         $user->remember_token = null;
         $user->email_verified_at = Carbon::now();
         $user->save();
-
+        // Return a success response with a message
         return response()->json(['message' => 'Account activated successfully. Now You Can Login With Your New Password'], 200);
     }
 
 
     public function showUsers(Request $request)
     {
-        $perPage = 10; // number of users to send per page
-        $page = $request->query('page') ?: 1; // current page number
+        // Set the number of users to send per page
+        $perPage = 10;
+        // Get the current page number from the query string or default to 1
+        $page = $request->query('page') ?: 1;
+        // Retrieve the users for the current page
         $users = User::latest()->skip(($page - 1) * $perPage)->take($perPage)->get();
+        // Get the total number of users
         $totalUsers = User::count();
-
+        // Transform the user data to the desired format
         $userData = [];
         foreach ($users as $user) {
             $userData[] = [
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'status'=>$user->status,
-                'role_name' => $user->role->role_name 
+                'status' => $user->status,
+                'role_name' => $user->role->role_name
             ];
         }
 
-       
 
+        // Return the user data as a JSON response
         return response()->json([
-            'data' => $userData, 
+            'data' => $userData,
             'total' => $totalUsers,
             'per_page' => $perPage,
             'current_page' => $page,
@@ -156,44 +172,51 @@ class NewUserController extends Controller
 
     public function update(Request $request, $id)
     {
+        // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:50',
             'role_id' => 'required|exists:roles,id',
             'status' => 'required',
         ]);
-
+        // If validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' =>  $validator->errors()], 400);
         }
-
+        // Find the user to update
         $user = User::find($id);
+        // If the user is not found, return an error response
         if (!$user) {
             return response()->json(['error' => 'User not found'], 404);
         }
+        // Find the role to update
         $role = Role::find($request->role_id);
 
         // validate that the role exists
         if (!$role) {
             return response()->json(['error' => 'Invalid role_id'], 422);
         }
-
+        // Update the user's information
         $user->name = $request->input('name');
         $user->role_id = $request->role_id;
         $user->status = $request->input('status');
         $user->save();
-
+        // Return a success message
         return response()->json(['message' => 'User updated successfully.'], 200);
     }
 
     public function setPasswordToDefault($id)
     {
+        // Find the user with the given ID.
         $user = User::findOrFail($id);
+        // Store the user's current password in a temporary variable.
         $tempPassword = $user->password;
+        // Set the user's password to their default password.
         $user->password = $user->default_password;
+        // Set the user's default password to their previous password.
         $user->default_password = $tempPassword;
-
+        // Save the changes to the user object in the database.
         $user->save();
-
+        // Return a JSON response with a success message.
         return response()->json(['message' => 'Password and default password swapped successfully.']);
     }
 }

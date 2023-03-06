@@ -18,29 +18,37 @@ class AuthController extends Controller
     use HasApiTokens;
     public function login(Request $request)
     {
+        // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        // If validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-        // attempt to authenticate the user
+        // Attempt to authenticate the user with the provided email and password
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
-            // create an access token for the authenticated user
+            // Get the authenticated user
             $user = Auth::user();
+
+            // Check if the user's email has been verified
             if ($user->email_verified_at == null) {
                 return response()->json(['error' => 'User is Not Verified'], 401);
             }
-            
+
             // Get the role_id of the user
             $role_id = $user->role_id;
 
+            // Create an access token for the authenticated user
             $token = $user->createToken('authToken')->accessToken;
 
-            return response()->json(['access_token' => $token, 'user' => $user->email , 'role_id' => $role_id], 200);
+
+            // Return a success response with the access token, user's email, and role_id
+            return response()->json(['access_token' => $token, 'user' => $user->email, 'role_id' => $role_id], 200);
         } else {
+            // If authentication fails, return an error response
             return response()->json(['error' => 'Email or Password is Incorrect'], 401);
         }
     }
@@ -49,39 +57,45 @@ class AuthController extends Controller
     public function logout(Request $request)
     {
 
+        // Check if the user is authenticated
         if (auth()->check()) {
-            // delete the token of the authenticated user
-
+            // Delete the token of the authenticated user
             $request->user()->tokens()->delete();
-
+            // Return a success message upon successful logout
             return response()->json(['message' => 'Successfully logged out']);
         } else {
+            // Return an error message if user is not logged in
             return response()->json(['message' => 'user not logged in ']);
         }
     }
 
     public function changePassword(Request $request)
     {
+        // Check if the user is authenticated
         if (auth()->check()) {
-            $user = auth()->user();
 
+            // Get the authenticated user object
+            $user = auth()->user();
+            // Check if the old password matches with the user's current password
             if (!Hash::check($request->old_password, $user->password)) {
                 return response()->json(['error' => 'Old password does not match'], 400);
             }
+            // Validate the new password using Laravel's validator
             $validator = Validator::make($request->all(), [
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
                 'password_confirmation' => ['required', 'same:password'],
             ]);
-
+            // If validation fails, return error response with validation errors
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()], 422);
             }
-
+            // If validation passes, update the user's password and save the changes
             $user->password = bcrypt($request->password);
             $user->save();
+            // Return success message upon successful password change
             return response()->json(['message' => 'Password changed successfully'], 200);
         } else {
-
+            // If the user is not authenticated, return an error response
             return response()->json(['error' => 'User is Not Authenticated'], 401);
         }
     }
@@ -89,60 +103,71 @@ class AuthController extends Controller
 
     public function sendPasswordResetLink(Request $request)
     {
+        // Validate the email provided in the request
         $request->validate([
             'email' => 'required|email',
         ]);
-
+        // Get the user with the email provided in the request
         $user = User::where('email', $request->email)->first();
 
-
+        // If user does not exist, return error response
         if (!$user) {
             return response()->json(['error' => 'Email Is Invalid'], 400);
         }
-
+        // Create a new token for the user and update the user's remember_token
         $token = $user->createToken('authToken')->accessToken;
         $user->remember_token = $token;
         $user->save();
-
+        // Try sending an email to the user with the password reset link
         try {
             Mail::to($request->email)->send(new sendPasswordResetLink($token));
         } catch (\Throwable $th) {
+            // If sending email fails, return error response with the error message
             return response()->json(['message' => $th->getMessage()], 400);
         }
-
+        // Return success response upon successful email send
         return response()->json(['message' => 'Mail Sent Successfully. Please Check Your Email'], 200);
     }
 
     public function resetPassword(Request $request)
     {
+        // Validate the password provided in the request
         $validator = Validator::make($request->all(), [
             'password' =>  ['required', 'string', 'min:8'],
 
         ]);
 
+        // If validation fails, return error response with the validation errors
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
         }
+
+        // Get the token from the request
         $token = $request->token;
 
-
+        // Get the user with the provided token
         $user = User::where('remember_token', $token)->first();
 
+        // If user does not exist with the provided token, return error response
         if (!$user) {
             return response()->json(['error' => 'Invalid token'], 400);
         }
 
+        // Reset the user's password and remember_token, and save the user
         $user->password = Hash::make($request->password);
         $user->remember_token = null;
         $user->save();
 
+        // Return success response upon successful password reset
         return response()->json(['message' => 'Password reset successfully'], 200);
     }
 
     public function show()
     {
+        // Get the authenticated user
         $user = Auth::user();
 
+        // Return the user's name, profile picture, email, role id, and status in a JSON response
         return response()->json([
             'name' => $user->name,
             'profile_picture' => $user->profile_picture,
@@ -154,24 +179,27 @@ class AuthController extends Controller
 
     public function updateProfile(Request $request)
     {
+        // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'profile_picture' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
+
+        // if validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
-
+        // get the authenticated user
         $user = Auth::user();
 
-
+        // if the user is not authenticated, return an unauthorized error response
         if (!$user) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-
+        // update the user's name with the input name
         $user->fill($request->only('name'));
-
+        // if a new profile picture is uploaded, update the user's profile picture
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
 
@@ -183,9 +211,10 @@ class AuthController extends Controller
 
             // save the profile picture to the desired path
             Image::make($image)->save(public_path($path));
-
+            // update the user's profile picture with the new file name
             $user->profile_picture = $fileName;
         }
+        // return a success response
         $user->save();
         return response()->json(['message' => 'Profile Updated Successfully'], 200);
     }
