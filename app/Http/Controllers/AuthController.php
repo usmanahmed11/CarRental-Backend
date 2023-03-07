@@ -27,6 +27,13 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
         }
+
+        // Check if the user is active
+        $user = User::where('email', $request->email)->first();
+        if ($user && $user->status === 'inactive') {
+            return response()->json(['error' => 'User is inactive'], 401);
+        }
+        
         // Attempt to authenticate the user with the provided email and password
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
