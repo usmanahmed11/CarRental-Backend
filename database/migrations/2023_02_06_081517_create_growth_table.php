@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('growth', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->enum('email_status', ['completed', 'pending', 'in_progress', 'sent', 'failed'])->default('pending');
             $table->timestamps();
         });
     }

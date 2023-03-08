@@ -23,7 +23,6 @@ class GrowthController extends Controller
     { // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'title' => 'required',
-            'email_status' => 'required',
             'candidateInfo.*.name' => 'required',
             'candidateInfo.*.experience' => 'required|numeric',
             'candidateInfo.*.skillSet' => 'required',
@@ -41,7 +40,6 @@ class GrowthController extends Controller
         // Create a new growth record
         $growth = new Growth;
         $growth->title = $request->title;
-        $growth->email_status = $request->email_status;
         $growth->status = $request->input('status');
         $growth->save();
 
@@ -98,7 +96,7 @@ class GrowthController extends Controller
         // Fetch the growth records along with some specific columns using query builder.
         // Order them by the latest created records, skip the records of previous pages and fetch only $perPage records per page.
         $data = DB::table('growth')
-            ->select('id', 'title', 'email_status', 'created_at', 'status')
+            ->select('id', 'title', 'created_at', 'status')
             ->latest()
             ->skip(($page - 1) * $perPage)
             ->take($perPage)
@@ -176,7 +174,6 @@ class GrowthController extends Controller
         // Validate the input data using Laravel's built-in validator
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:250',
-            'email_status' => 'required',
             'candidateInfo.*.name' => 'required',
             'candidateInfo.*.experience' => 'required|numeric',
             'candidateInfo.*.skillSet' => 'required',
@@ -200,7 +197,6 @@ class GrowthController extends Controller
         }
         // Updating Growth user record
         $growth->title = $request->title;
-        $growth->email_status = $request->email_status;
         $growth->status = $request->input('status');
         $growth->save();
 
