@@ -5,7 +5,6 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
 </head>
 
 <body style="background: #f6f6f6;">
@@ -23,7 +22,15 @@
                             style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; border-radius: 3px; background-color: #fff; margin: 0; border: 1px solid #e9e9e9"
                             width="100%" cellspacing="0" cellpadding="0">
                             <tbody>
-                                @include('includes.header')
+                                <tr
+                                    style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
+                                    <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 22px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #fffefe; margin: 0; padding: 0px; border-bottom: 1px solid #b5b9bd"
+                                        valign="top">
+                                        <strong style="padding: 15px; float: left">
+                                            <span style="color: #212529">GrowthTracker</span>
+                                        </strong>
+                                    </td>
+                                </tr>
                                 <tr
                                     style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
                                     <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; vertical-align: top; margin: 0; padding: 20px"
@@ -39,11 +46,11 @@
                                                         Hi ,
                                                         <br />
                                                         <p>{!! $greetings !!}</p>
-                                                        
+
                                                         <table border="2" style="border-collapse: collapse;">
                                                             <thead>
                                                                 <tr>
-                                                                    {{-- <th>Title</th> --}}
+
                                                                     <th>Name</th>
                                                                     <th>Experience</th>
                                                                     <th>Skill Set</th>
@@ -56,7 +63,7 @@
                                                             </thead>
                                                             <tbody>
                                                                 <tr>
-                                                                    {{-- <td>{{ $title }}</td> --}}
+
                                                                     <td>{{ $candidateInfo[0]['name'] }}</td>
                                                                     <td>{{ $candidateInfo[0]['experience'] }}</td>
                                                                     <td>{{ implode(',', $candidateInfo[0]['skillSet'])
@@ -68,7 +75,7 @@
                                                                     <td>{{ $candidateInfo[0]['status'] }}</td>
                                                                 </tr>
                                                                 @for ($i = 1; $i < count($candidateInfo); $i++) <tr>
-                                                                   
+
                                                                     <td>{{ $candidateInfo[$i]['name'] }}</td>
                                                                     <td>{{ $candidateInfo[$i]['experience'] }}</td>
                                                                     <td>{{ implode(',', $candidateInfo[$i]['skillSet'])
@@ -83,27 +90,36 @@
                                             </tbody>
                                         </table>
 
-
-
                                     </td>
 
                                 </tr>
 
 
                                 <tr
-                                    style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px">
-                                    <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px"
+                                    style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
+                                    <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
                                         valign="top">
-                                        <p>{!! $signature !!}</p>
+                                        <strong>Thanks</strong>,
+                                        <br>
+                                        <strong>GrowthTracker</strong>
                                     </td>
-
                                 </tr>
-
                             </tbody>
                         </table>
                 </td>
             </tr>
-            @include('includes.footer')
+            <tr style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
+                <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 14px; vertical-align: top; color: #000; text-align: center; border-top: 1px solid #b5b9bd; margin: 0; padding: 0px; "
+                    valign="top">
+                    <div style="padding: 15px">
+                        <p style="margin-bottom:0px ; margin-top:5px">Please contact
+                            support@nxb.com.pk
+                            If you find any
+                            issue with growthtracker.vteamslabs.com</p>
+                        <p style="margin-top:5px">Copyright @2023 Nextbridge (Pvt.) Ltd.</p>
+                    </div>
+                </td>
+            </tr>
         </tbody>
     </table>
     </div>
