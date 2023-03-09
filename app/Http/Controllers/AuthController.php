@@ -33,7 +33,7 @@ class AuthController extends Controller
         if ($user && $user->status === 'inactive') {
             return response()->json(['error' => 'User is inactive'], 401);
         }
-        
+
         // Attempt to authenticate the user with the provided email and password
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
 
@@ -87,15 +87,33 @@ class AuthController extends Controller
             if (!Hash::check($request->old_password, $user->password)) {
                 return response()->json(['error' => 'Old password does not match'], 400);
             }
+
             // Validate the new password using Laravel's validator
             $validator = Validator::make($request->all(), [
-                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).+$/'
+                ],
                 'password_confirmation' => ['required', 'same:password'],
+            ], [
+
+                'password.string' => 'Password must be a string',
+                'password.min' => 'Password must be at least 8 characters',
+                'password.confirmed' => 'Password confirmation does not match',
+                'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+                'password_confirmation.same' => 'Password confirmation does not match',
             ]);
+
             // If validation fails, return error response with validation errors
             if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()], 422);
+                $errors = $validator->messages()->all();
+                return response()->json(['error' => $errors], 422);
             }
+
+
             // If validation passes, update the user's password and save the changes
             $user->password = bcrypt($request->password);
             $user->save();
@@ -140,13 +158,26 @@ class AuthController extends Controller
     {
         // Validate the password provided in the request
         $validator = Validator::make($request->all(), [
-            'password' =>  ['required', 'string', 'min:8'],
-
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).+$/'
+            ],
+            'password_confirmation' => ['required', 'same:password'],
+        ], [
+            'password.string' => 'Password must be a string',
+            'password.min' => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+            'password_confirmation.same' => 'Password confirmation does not match',
         ]);
 
-        // If validation fails, return error response with the validation errors
+        // If validation fails, return error response with validation errors
         if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
+            $errors = $validator->messages()->all();
+            return response()->json(['error' => $errors], 422);
         }
 
         // Get the token from the request

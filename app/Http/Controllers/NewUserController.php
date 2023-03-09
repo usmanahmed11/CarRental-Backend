@@ -87,16 +87,30 @@ class NewUserController extends Controller
 
     public function activateAccount(Request $request)
     {
-        // Validate the input data using Laravel's built-in validator
+        // Validate the new password using Laravel's validator
         $validator = Validator::make($request->all(), [
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).+$/'
+            ],
             'password_confirmation' => ['required', 'same:password'],
-        ]);
-        // If validation fails, return an error response
-        if ($validator->fails()) {
-            return response()->json(['error' =>  $validator->errors()], 400);
-        }
+        ], [
 
+            'password.string' => 'Password must be a string',
+            'password.min' => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+            'password_confirmation.same' => 'Password confirmation does not match',
+        ]);
+
+        // If validation fails, return error response with validation errors
+        if ($validator->fails()) {
+            $errors = $validator->messages()->all();
+            return response()->json(['error' => $errors], 422);
+        }
         // Find the user using the activation token
         $user = User::where('remember_token', $request->token)->first();
 
