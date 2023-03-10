@@ -62,7 +62,7 @@
                                                         valign="top">
                                                         <a class="btn btn-primary w-50 d-block m-auto"
                                                             style="color:black"
-                                                            href="http://localhost:3000/update-password/{{ $token }}">Reset
+                                                            href="{{ env('FRONTEND_URL') }}/update-password/{{ $token }}">Reset
                                                             your password
                                                         </a>
                                                     </td>

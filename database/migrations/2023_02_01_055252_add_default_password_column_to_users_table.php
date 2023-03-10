@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('status')->default('active');
-        });
+        // Schema::table('users', function (Blueprint $table) {
+        //     $table->string('status')->default('active');
+        // });
     }
 
     /**
@@ -25,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        // Schema::table('users', function (Blueprint $table) {
+        //     //
+        // });
     }
 };

@@ -17,13 +17,13 @@ class PermissionsTableSeeder extends Seeder
     {
         $permissions = [
             [
-                'permission_name' => 'Growth_management'
+                'permissions_name' => 'Growth_management'
             ],
             [
-                'permission_name' => 'user_management'
+                'permissions_name' => 'user_management'
             ],
             [
-                'permission_name' => 'email_configuration'
+                'permissions_name' => 'email_configuration'
             ],
         ];
 

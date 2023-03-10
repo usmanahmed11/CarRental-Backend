@@ -43,14 +43,15 @@ class UserActivationEmail extends Mailable
      *
      * @return \Illuminate\Mail\Mailables\Content
      */
-    public function content()
-    {
-        return new Content(
-            view: 'Mail.UserActivation',
-            with: ['token' => $this->token,
-            'url' => URL::to('http://localhost:3000/activate-account/' . $this->token),],
-        );
-    }
+   public function content()
+{
+    $url = env('FRONTEND_URL') . '/activate-account/' . $this->token;
+    return new Content(
+        view: 'Mail.UserActivation',
+        with: ['token' => $this->token, 'url' => $url],
+    );
+}
+
 
     /**
      * Get the attachments for the message.

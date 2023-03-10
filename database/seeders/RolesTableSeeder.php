@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -15,12 +16,12 @@ class RolesTableSeeder extends Seeder
      */
     public function run()
     {
-        $adminRoleId = DB::table('roles')->where('role_name', 'Admin')->value('id');
-        $recruitmentManagerRoleId = DB::table('roles')->where('role_name', 'Recruitment manager')->value('id');
-        $userRoleId = DB::table('roles')->where('role_name', 'User')->value('id');
+        $roles = [
+            ['role_name' => 'Admin'],
+            ['role_name' => 'Recruitment manager'],
+            ['role_name' => 'User'],
+        ];
 
-        DB::table('users')->where('id', 1)->update(['role_id' => $adminRoleId]);
-        DB::table('users')->where('id', 2)->update(['role_id' => $recruitmentManagerRoleId]);
-        DB::table('users')->where('id', '>', 2)->update(['role_id' => $userRoleId]);
+        Role::insert($roles);
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UsersTableSeeder extends Seeder
@@ -16,6 +17,7 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
+        $adminRoleId = DB::table('roles')->where('role_name', 'Admin')->value('id');
         User::create([
             'name' => 'Admin',
             'email' => 'usman.ahmed@nxb.com.pk',
@@ -25,7 +27,7 @@ class UsersTableSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
             'status' => 'active',
-            'role_id' => 1,
+            'role_id' =>  $adminRoleId,
         ]);
     }
 }
