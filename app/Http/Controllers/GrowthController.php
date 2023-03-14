@@ -59,15 +59,8 @@ class GrowthController extends Controller
             $candidateInfo->save();
         }
 
-        $mail = 'imran.yousaf@nxvt.com';
-        Mail::send("Email Message ", function ($message) use ($mail) {
-            $message->to($mail);
-            $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-            $message->subject('GrowthTracker Nextbridge User Activation');
-        });
-        
         // Fetch email configuration data from database
-        /*$emailConfig = EmailConfiguration::first();
+        $emailConfig = EmailConfiguration::first();
 
         // Send email
         $mail = new CandidateInfoAdded($request->candidateInfo, $emailConfig->subject, $emailConfig->greetings, $emailConfig->signature, $growth->title);
@@ -84,7 +77,7 @@ class GrowthController extends Controller
             $mail->bcc($bcc);
         }
         // Send email to recipient(s)
-        Mail::to($to)->send($mail);*/
+        Mail::to($to)->send($mail);
 
         // Return success response
         return response()->json(['message' => 'Candidate Info is added successfully '], 200);
