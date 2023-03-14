@@ -93,12 +93,19 @@
                                     </td>
 
                                 </tr>
+                                <tr>
+                                    <td <p>{!! $signature !!}</p>
+
+                                    </td>
+                                </tr>
 
 
                                 <tr
                                     style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
                                     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
                                         valign="top">
+
+
                                         <strong>Thanks</strong>,
                                         <br>
                                         <strong>GrowthTracker</strong>

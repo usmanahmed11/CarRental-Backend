@@ -93,23 +93,23 @@ class EmailConfigController extends Controller
                 'bcc' => isset($data['bcc']) ? implode(',', $data['bcc']) : null,
             ]);
         }
-        // Send the email to all of the recipients
-        foreach ($userEmails as $email) {
-            // Trim any whitespace from the email address
-            $email = trim($email);
-            // Create a new instance of the custom email class, passing in the data
-            $mail = new CustomEmail($data);
-            // If there are CC recipients, add them to the email
-            if (isset($data['cc'])) {
-                $mail->cc($data['cc']);
-            }
-            // If there are BCC recipients, add them to the email
-            if (isset($data['bcc'])) {
-                $mail->bcc($data['bcc']);
-            }
-            // Send the email to the current recipient
-            Mail::to($email)->send($mail);
-        }
+        // // Send the email to all of the recipients
+        // foreach ($userEmails as $email) {
+        //     // Trim any whitespace from the email address
+        //     $email = trim($email);
+        //     // Create a new instance of the custom email class, passing in the data
+        //     $mail = new CustomEmail($data);
+        //     // If there are CC recipients, add them to the email
+        //     if (isset($data['cc'])) {
+        //         $mail->cc($data['cc']);
+        //     }
+        //     // If there are BCC recipients, add them to the email
+        //     if (isset($data['bcc'])) {
+        //         $mail->bcc($data['bcc']);
+        //     }
+        //     // Send the email to the current recipient
+        //     Mail::to($email)->send($mail);
+        // }
         // Return a JSON response indicating success
         return response()->json(['message' => 'Email Configuration Updated Successfully.'], 200);
     }

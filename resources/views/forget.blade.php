@@ -43,7 +43,7 @@
                                                     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px">
                                                     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px"
                                                         valign="top">
-                                                        Hi ,
+                                                        Hi , {{ $user }}
                                                         <br />
                                                         Sorry to hear you're having trouble logging into your account.We
                                                         got a Message That you Forgot your Password. If this was you,

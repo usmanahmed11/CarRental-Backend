@@ -145,7 +145,16 @@ class AuthController extends Controller
         $user->save();
         // Try sending an email to the user with the password reset link
         try {
-            Mail::to($request->email)->send(new sendPasswordResetLink($token));
+            // Mail::to($request->email)->send(new sendPasswordResetLink($token));
+
+
+            $mail = $request->email;
+
+            Mail::send("forget", ['token' => $token, 'user' => $user->name], function ($message) use ($mail) {
+                $message->to($mail);
+                $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
+                $message->subject('GrowthTracker Nextbridge User Activation');
+            });
         } catch (\Throwable $th) {
             // If sending email fails, return error response with the error message
             return response()->json(['message' => $th->getMessage()], 400);
