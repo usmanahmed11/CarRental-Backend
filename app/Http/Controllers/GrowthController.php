@@ -303,7 +303,7 @@ class GrowthController extends Controller
 
     public function testEmail(){
         $mail = 'imran.yousaf@nxvt.com';
-        Mail::send("Email Message ", ['user' => "sadf", 'lead' => "sadfs"], function ($message) use ($mail) {
+        Mail::send("TestEmailMessage", ['user' => "Imran Yousaf", 'lead' => "test abc"], function ($message) use ($mail) {
             $message->to($mail);
             $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
             $message->subject('GrowthTracker Nextbridge User Activation');
