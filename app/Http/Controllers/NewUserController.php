@@ -130,18 +130,20 @@ class NewUserController extends Controller
 
 
     public function showUsers(Request $request)
-    {
-        // Set the number of users to send per page
-        $perPage = 10;
-        // Get the current page number from the query string or default to 1
-        $page = $request->query('page') ?: 1;
-        // Retrieve the users for the current page
-        $users = User::latest()->skip(($page - 1) * $perPage)->take($perPage)->get();
-        // Get the total number of users
-        $totalUsers = User::count();
-        // Transform the user data to the desired format
-        $userData = [];
-        foreach ($users as $user) {
+{
+    // Set the number of users to send per page
+    $perPage = 10;
+    // Get the current page number from the query string or default to 1
+    $page = $request->query('page') ?: 1;
+    // Retrieve the users for the current page, excluding user with ID 1
+    $users = User::where('id', '<>', 1)->latest()->skip(($page - 1) * $perPage)->take($perPage)->get();
+    // Get the total number of users, excluding user with ID 1
+    $totalUsers = User::where('id', '<>', 1)->count();
+    // Transform the user data to the desired format
+    $userData = [];
+    foreach ($users as $user) {
+        // Only include the user data if the ID is not 1
+        if ($user->id != 1) {
             $userData[] = [
                 'id' => $user->id,
                 'name' => $user->name,
@@ -150,17 +152,19 @@ class NewUserController extends Controller
                 'role_name' => $user->role->role_name
             ];
         }
-
-
-        // Return the user data as a JSON response
-        return response()->json([
-            'data' => $userData,
-            'total' => $totalUsers,
-            'per_page' => $perPage,
-            'current_page' => $page,
-            'last_page' => ceil($totalUsers / $perPage)
-        ]);
     }
+
+    // Return the user data as a JSON response
+    return response()->json([
+        'data' => $userData,
+        'total' => $totalUsers,
+        'per_page' => $perPage,
+        'current_page' => $page,
+        'last_page' => ceil($totalUsers / $perPage)
+    ]);
+}
+
+    
 
     public function destroy($id)
     {

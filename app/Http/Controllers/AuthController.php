@@ -167,6 +167,7 @@ class AuthController extends Controller
             ],
             'password_confirmation' => ['required', 'same:password'],
         ], [
+
             'password.string' => 'Password must be a string',
             'password.min' => 'Password must be at least 8 characters',
             'password.confirmed' => 'Password confirmation does not match',
@@ -245,10 +246,15 @@ class AuthController extends Controller
             $fileName = time() . '.' . $image->getClientOriginalExtension();
 
             // set the path for storing the profile picture
-            $path = 'profile_pictures/' . $fileName;
+            // $path = 'profile_pictures/' . $fileName;
+            $path = $image->storeAs('public/profile_pictures', $fileName);
+
 
             // save the profile picture to the desired path
-            Image::make($image)->save(public_path($path));
+            // Image::make($image)->save(public_path($path));
+
+            Image::make($image)->save(storage_path('app/' . $path));
+
             // update the user's profile picture with the new file name
             $user->profile_picture = $fileName;
         }

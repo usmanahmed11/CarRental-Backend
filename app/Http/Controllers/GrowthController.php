@@ -170,60 +170,66 @@ class GrowthController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        // Validate the input data using Laravel's built-in validator
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:250',
-            'candidateInfo.*.name' => 'required',
-            'candidateInfo.*.experience' => 'required|numeric',
-            'candidateInfo.*.skillSet' => 'required',
-            'candidateInfo.*.jobTitle' => 'required',
-            'candidateInfo.*.team' => 'required',
-            'candidateInfo.*.location' => 'required',
-            'candidateInfo.*.joiningDate' => 'required',
-            'candidateInfo.*.status' => 'required',
-            'status' => 'required'
-        ]);
-        // If validation fails, return error response
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 400);
-        }
-        // Finding the Growth user record to update
-        $growth = Growth::find($id);
+{
+    // Validate the input data using Laravel's built-in validator
+    $validator = Validator::make($request->all(), [
+        'title' => 'required|string|max:250',
+        'candidateInfo.*.name' => 'required',
+        'candidateInfo.*.experience' => 'required|numeric',
+        'candidateInfo.*.skillSet' => 'required',
+        'candidateInfo.*.jobTitle' => 'required',
+        'candidateInfo.*.team' => 'required',
+        'candidateInfo.*.location' => 'required',
+        'candidateInfo.*.joiningDate' => 'required',
+        'candidateInfo.*.status' => 'required',
+        'status' => 'required'
+    ]);
 
-        // If the Growth user is not found, return error response
-        if (!$growth) {
-            return response()->json(['error' => 'Growth User not found'], 404);
-        }
-        // Updating Growth user record
-        $growth->title = $request->title;
-        $growth->status = $request->input('status');
-        $growth->save();
-
-
-        // Updating Candidate Info records associated with the Growth user
-        foreach ($request->candidateInfo as $candidate) {
-            $candidateInfo = CandidateInfo::find($candidate['id']);
-
-            // If the Candidate Info record is not found, return error response
-            if (!$candidateInfo) {
-                return response()->json(['error' => 'Candidate Info not found'], 404);
-            }
-            // Updating the Candidate Info record
-            $candidateInfo->name = $candidate['name'];
-            $candidateInfo->experience = $candidate['experience'];
-            $candidateInfo->skillSet = implode(',', $candidate['skillSet']);
-            $candidateInfo->jobTitle = $candidate['jobTitle'];
-            $candidateInfo->team = $candidate['team'];
-            $candidateInfo->location = $candidate['location'];
-            $candidateInfo->joiningDate = $candidate['joiningDate'];
-            $candidateInfo->status = $candidate['status'];
-
-            $candidateInfo->save();
-        }
-        // Returning success response
-        return response()->json(['message' => 'Growth User updated successfully.'], 200);
+    // If validation fails, return error response
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 400);
     }
+
+    // Finding the Growth user record to update
+    $growth = Growth::find($id);
+
+    // If the Growth user is not found, return error response
+    if (!$growth) {
+        return response()->json(['error' => 'Growth User not found'], 404);
+    }
+
+    // Updating Growth user record
+    $growth->title = $request->title;
+    $growth->status = $request->input('status');
+    $growth->save();
+
+    // Updating or Creating Candidate Info records associated with the Growth user
+    foreach ($request->candidateInfo as $candidate) {
+        $candidateInfo = CandidateInfo::find($candidate['id']);
+
+        if (!$candidateInfo) {
+            // Create a new Candidate Info record if not found
+            $candidateInfo = new CandidateInfo;
+        }
+
+        // Updating the Candidate Info record
+        $candidateInfo->growth_id = $id;
+        $candidateInfo->name = $candidate['name'];
+        $candidateInfo->experience = $candidate['experience'];
+        $candidateInfo->skillSet = implode(',', $candidate['skillSet']);
+        $candidateInfo->jobTitle = $candidate['jobTitle'];
+        $candidateInfo->team = $candidate['team'];
+        $candidateInfo->location = $candidate['location'];
+        $candidateInfo->joiningDate = $candidate['joiningDate'];
+        $candidateInfo->status = $candidate['status'];
+
+        $candidateInfo->save();
+    }
+
+    // Returning success response
+    return response()->json(['message' => 'Growth User updated successfully.'], 200);
+}
+
 
     public function showCandidate($id)
     { // Retrieve the growth information of the candidate with the given id, along with their candidateInfo
