@@ -51,15 +51,8 @@ class NewUserController extends Controller
         $user->save();
 
         // Send an activation email to the user
-        //Mail::to($user->email)->send(new UserActivationEmail($token));
-        $mail = $user->email;
+        Mail::to($user->email)->send(new UserActivationEmail($token));
 
-        Mail::send(new UserActivationEmail($token), function ($message) use ($mail) {
-            $message->to($mail);
-            $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-            $message->subject('GrowthTracker Nextbridge User Activation');
-        });
-        
         // Return a success response with a message
 
         return response()->json(['message' => 'Account Created Successfully Please Verify The Mail For Login'], 200);
