@@ -48,6 +48,7 @@ Route::get('/status', [GrowthController::class, 'getStatus']);
 Route::get('/skillSet', [GrowthController::class, 'getSkillSet']);
 Route::get('/get-candidate-info/{titleId}', [GrowthController::class, 'candidateInfo']);
 Route::get('/growthStatus', [GrowthController::class, 'growthStatus']);
+Route::get('/testemail', [GrowthController::class, 'testEmail']);
 
 
 Route::group(['middleware' => ['auth:api']], function () {
