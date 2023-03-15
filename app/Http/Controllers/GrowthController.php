@@ -76,9 +76,12 @@ class GrowthController extends Controller
             $signature = $emailConfig->signature;
             $title = $emailConfig->title;
 
+            $dateString = '{{date:dddd DD MMM, YYYY}}';
+            $formattedDate = date('l d M, Y');
+            $formattedSubject = str_replace($dateString, $formattedDate, $subject);
 
-            Mail::send("candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $subject, 
-            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc) {
+            Mail::send("Mail.candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $formattedSubject, 
+            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc , $formattedSubject) {
 
 
                 $message->to($mail);
@@ -93,7 +96,7 @@ class GrowthController extends Controller
                 }
             
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject('GrowthTracker Nextbridge User Activation');
+                $message->subject($formattedSubject);
             });
         }
 
@@ -145,7 +148,7 @@ class GrowthController extends Controller
             ->first();
         // Query the 'candidate_info' table to get information about candidates associated with the given title id
         $candidates = DB::table('candidate_info')
-            ->select('name', 'experience', 'skillSet', 'jobTitle', 'team', 'location', 'joiningDate', 'status', 'created_at')
+            ->select('id','growth_id' ,'name', 'experience', 'skillSet', 'jobTitle', 'team', 'location', 'joiningDate', 'status', 'created_at')
             ->where('growth_id', $titleId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -258,9 +261,12 @@ class GrowthController extends Controller
             $signature = $emailConfig->signature;
             $title = $emailConfig->title;
 
+            $dateString = '{{date:dddd DD MMM, YYYY}}';
+            $formattedDate = date('l d M, Y');
+            $formattedSubject = str_replace($dateString, $formattedDate, $subject);
 
-            Mail::send("candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $subject, 
-            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc, $subject) {
+            Mail::send("Mail.candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $formattedSubject, 
+            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc, $formattedSubject) {
 
 
                 $message->to(explode(",",$mail));
@@ -275,7 +281,7 @@ class GrowthController extends Controller
                 }
             
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject($subject);
+                $message->subject($formattedSubject);
             });
         }
 
@@ -353,7 +359,13 @@ class GrowthController extends Controller
             'last_page' => ceil($totalTitles / $perPage)
         ]);
     }
-
+    public function destroyy($id)
+    {
+        $candidate = CandidateInfo::findOrFail($id);
+        $candidate->delete();
+    
+        return response()->json(['message' => 'Candidate deleted successfully']);
+    }
     public function testEmail()
     {
         $mail = 'imran.yousaf@nxvt.com';

@@ -49,9 +49,8 @@
                                                     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px">
                                                     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px"
                                                         valign="top">
-                                                        Hi ,
-                                                        <br />
-                                                        <p><strong>Subject: </strong>{{ $subject }}</p>
+                                                      
+                                                        
                                                         <p>{!! $greetings !!}</p>
 
                                                         <table id="datatable" class="table table-striped table-bordered"
@@ -118,10 +117,6 @@
                                     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
                                         valign="top">
 
-
-                                        <strong>Thanks</strong>,
-                                        <br>
-                                        <strong>GrowthTracker</strong>
                                     </td>
                                 </tr>
                             </tbody>

@@ -150,10 +150,10 @@ class AuthController extends Controller
 
             $mail = $request->email;
 
-            Mail::send("forget", ['token' => $token, 'user' => $user->name], function ($message) use ($mail) {
+            Mail::send("Mail.forget", ['token' => $token, 'user' => $user->name], function ($message) use ($mail) {
                 $message->to($mail);
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject('GrowthTracker Nextbridge User Activation');
+                $message->subject('GrowthTracker Nextbridge Forget Password');
             });
         } catch (\Throwable $th) {
             // If sending email fails, return error response with the error message

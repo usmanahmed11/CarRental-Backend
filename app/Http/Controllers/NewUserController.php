@@ -63,7 +63,7 @@ class NewUserController extends Controller
 
         // Return a success response with a message
 
-        return response()->json(['message' => 'Account Created Successfully Please Verify The Mail For Login'], 200);
+        return response()->json(['message' => 'Invitation Email has been sent successfully '], 200);
     }
 
 

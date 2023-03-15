@@ -51,8 +51,7 @@
                                                         on board.
                                                         <br />
                                                         To get started with your account, kindly activate it by clicking
-                                                        the link provided below or copying and pasting it into your
-                                                        browser's address bar:
+                                                        the button provided below:
 
 
                                                     </td>
