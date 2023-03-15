@@ -260,22 +260,22 @@ class GrowthController extends Controller
 
 
             Mail::send("candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $subject, 
-            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc) {
+            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc, $subject) {
 
 
-                $message->to($mail);
+                $message->to(explode(",",$mail));
                 // Add CC recipients if any
                 if ($cc !== null) {
-                    $message->cc($cc);
+                    $message->cc(explode(",",$cc));
                 }
 
                 // Add BCC recipients if any
                 if ($bcc !== null) {
-                    $message->bcc($bcc);
+                    $message->bcc(explode(",",$bcc));
                 }
             
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject('GrowthTracker Nextbridge User Activation');
+                $message->subject($subject);
             });
         }
 
