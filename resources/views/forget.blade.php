@@ -66,7 +66,9 @@
                                                             your password
                                                         </a>
                                                     </td>
-                                                    {{ env('FRONTEND_URL') }}/update-password/{{ $token }}
+                                                    <td>
+                                                        <span style="color:#007bff">{{ env('FRONTEND_URL') }}/update-password/{{ $token }}<span>
+                                                    </td>
                                                 </tr>
                                                 <tr
                                                     style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px">
