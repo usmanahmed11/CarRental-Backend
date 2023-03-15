@@ -5,6 +5,12 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"
         integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link href="{{ asset('theme/datatables.net-bs/css/dataTables.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('theme/datatables.net-buttons-bs/css/buttons.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('theme/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('theme/datatables.net-responsive-bs/css/responsive.bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('theme/datatables.net-scroller-bs/css/scroller.bootstrap.min.css') }}" rel="stylesheet">
+
 </head>
 
 <body style="background: #f6f6f6;">
@@ -45,9 +51,12 @@
                                                         valign="top">
                                                         Hi ,
                                                         <br />
+                                                        <p><strong>Subject: </strong>{{ $subject }}</p>
                                                         <p>{!! $greetings !!}</p>
 
-                                                        <table border="2" style="border-collapse: collapse;">
+                                                        <table id="datatable" class="table table-striped table-bordered"
+                                                            width="100%">
+
                                                             <thead>
                                                                 <tr>
 
@@ -71,7 +80,8 @@
                                                                     <td>{{ $candidateInfo[0]['jobTitle'] }}</td>
                                                                     <td>{{ $candidateInfo[0]['team'] }}</td>
                                                                     <td>{{ $candidateInfo[0]['location'] }}</td>
-                                                                    <td>{{ $candidateInfo[0]['joiningDate'] }}</td>
+                                                                    <td>{{ date('F j, Y', strtotime($candidateInfo[0]['joiningDate'])) }}</td>
+
                                                                     <td>{{ $candidateInfo[0]['status'] }}</td>
                                                                 </tr>
                                                                 @for ($i = 1; $i < count($candidateInfo); $i++) <tr>
@@ -83,7 +93,10 @@
                                                                     <td>{{ $candidateInfo[$i]['jobTitle'] }}</td>
                                                                     <td>{{ $candidateInfo[$i]['team'] }}</td>
                                                                     <td>{{ $candidateInfo[$i]['location'] }}</td>
-                                                                    <td>{{ $candidateInfo[$i]['joiningDate'] }}</td>
+                                                                    <td>{{ date('F j, Y',
+                                                                        strtotime($candidateInfo[$i]['joiningDate'])) }}
+                                                                    </td>
+
                                                                     <td>{{ $candidateInfo[$i]['status'] }}</td>
                                                 </tr>
                                                 @endfor
@@ -136,6 +149,19 @@
     </tr>
     </tbody>
     </table>
+    <script src="{{ asset('theme/datatables.net/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-bs/js/dataTables.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-buttons/js/dataTables.buttons.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-buttons-bs/js/buttons.bootstrap.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-buttons/js/buttons.flash.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-buttons/js/buttons.html5.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-buttons/js/buttons.print.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-keytable/js/dataTables.keyTable.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
+    <script src="{{ asset('theme/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+
 </body>
 
 </html>

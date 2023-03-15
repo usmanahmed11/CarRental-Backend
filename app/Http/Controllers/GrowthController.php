@@ -98,7 +98,7 @@ class GrowthController extends Controller
         }
 
         // Return success response
-        return response()->json(['message' => 'Candidate Info is added successfully'], 200);
+        return response()->json(['message' => 'Growth Record added successfully'], 200);
     }
 
 
@@ -183,7 +183,7 @@ class GrowthController extends Controller
         // Return a success response with a message indicating that both the Growth User 
         // and related CandidateInfo records were deleted successfully
         return response()->json([
-            'message' => 'Growth User and related Candidate Info records deleted successfully'
+            'message' => 'Growth record and related candidate data deleted successfully'
         ], 200);
     }
 
@@ -243,9 +243,44 @@ class GrowthController extends Controller
 
             $candidateInfo->save();
         }
+         // Check the status value
+         if ($growth->status === 'Sent') {
+            // Fetch email configuration data from database
+            $emailConfig = EmailConfiguration::first();
+
+            // // Send email
+            $mail =  $emailConfig->to;
+            $cc = $emailConfig->cc;
+            $bcc = $emailConfig->bcc;
+            $candidateInfo =   $request->candidateInfo;
+            $subject = $emailConfig->subject;
+            $greetings = $emailConfig->greetings;
+            $signature = $emailConfig->signature;
+            $title = $emailConfig->title;
+
+
+            Mail::send("candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $subject, 
+            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc) {
+
+
+                $message->to($mail);
+                // Add CC recipients if any
+                if ($cc !== null) {
+                    $message->cc($cc);
+                }
+
+                // Add BCC recipients if any
+                if ($bcc !== null) {
+                    $message->bcc($bcc);
+                }
+            
+                $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
+                $message->subject('GrowthTracker Nextbridge User Activation');
+            });
+        }
 
         // Returning success response
-        return response()->json(['message' => 'Growth User updated successfully.'], 200);
+        return response()->json(['message' => 'Growth Record updated successfully.'], 200);
     }
 
 
@@ -304,7 +339,7 @@ class GrowthController extends Controller
         $totalTitles = Growth::where('status', '=', 'Draft')->count();
         // Get the list of draft growth data from the database.
         $draftGrowth = DB::table('growth')
-            ->select('id', 'title', 'email_status', 'created_at', 'status')
+            ->select('id', 'title', 'created_at', 'status')
             ->where('status', '=', 'Draft')
             ->latest()
             ->get();
