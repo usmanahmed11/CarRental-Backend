@@ -248,7 +248,7 @@ class GrowthController extends Controller
             // Fetch email configuration data from database
             $emailConfig = EmailConfiguration::first();
 
-            // // Send email
+            // Send email
             $mail =  $emailConfig->to;
             $cc = $emailConfig->cc;
             $bcc = $emailConfig->bcc;
