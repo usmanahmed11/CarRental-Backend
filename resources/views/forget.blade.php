@@ -49,8 +49,7 @@
                                                         got a Message That you Forgot your Password. If this was you,
                                                         You can reset your password now:
                                                         <br />
-                                                        Kindly click the given below link or copy and paste it
-                                                        on your browser address bar to change your password
+                                                        Kindly click the given below button to change your password.
 
 
                                                     </td>
@@ -60,14 +59,7 @@
                                                     z>
                                                     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px"
                                                         valign="top">
-                                                        <a class="btn btn-primary w-50 d-block m-auto"
-                                                            style="color:black"
-                                                            href="{{ env('FRONTEND_URL') }}/update-password/{{ $token }}">Reset
-                                                            your password
-                                                        </a>
-                                                    </td>
-                                                    <td>
-                                                        <span style="color:#007bff">{{ env('FRONTEND_URL') }}/update-password/{{ $token }}<span>
+                                                        <a class="btn btn-primary w-50 d-block m-auto" style="color:black" href="{{ env('FRONTEND_URL') }}/update-password/{{ $token }}">Reset your password</a>
                                                     </td>
                                                 </tr>
                                                 <tr
