@@ -188,7 +188,7 @@ class GrowthController extends Controller
         // Return a success response with a message indicating that both the Growth User 
         // and related CandidateInfo records were deleted successfully
         return response()->json([
-            'message' => 'Growth record and related candidate data deleted successfully'
+            'message' => 'Growth record deleted successfully'
         ], 200);
     }
 
