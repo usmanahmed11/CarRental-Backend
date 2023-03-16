@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\CandidateInfoAdded;
 use App\Models\CandidateInfo;
 use App\Models\EmailConfiguration;
 use App\Models\jobTitle;

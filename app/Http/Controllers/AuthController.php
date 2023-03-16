@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Intervention\Image\Facades\Image;
 use Laravel\Passport\HasApiTokens;
-use Illuminate\Support\Facades\DB;
 
 class AuthController extends Controller
 {
