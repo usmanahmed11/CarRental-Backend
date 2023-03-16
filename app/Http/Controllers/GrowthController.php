@@ -80,8 +80,10 @@ class GrowthController extends Controller
             $formattedDate = date('l d M, Y');
             $formattedSubject = str_replace($dateString, $formattedDate, $subject);
 
-            Mail::send("Mail.candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $formattedSubject, 
-            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc , $formattedSubject) {
+            Mail::send("Mail.candidate_info_added", [
+                'candidateInfo' => $candidateInfo, 'subject' => $formattedSubject,
+                'greetings' => $greetings, 'signature' => $signature, 'title' => $title
+            ], function ($message) use ($mail, $cc, $bcc, $formattedSubject) {
 
 
                 $message->to($mail);
@@ -94,7 +96,7 @@ class GrowthController extends Controller
                 if ($bcc !== null) {
                     $message->bcc($bcc);
                 }
-            
+
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
                 $message->subject($formattedSubject);
             });
@@ -148,7 +150,7 @@ class GrowthController extends Controller
             ->first();
         // Query the 'candidate_info' table to get information about candidates associated with the given title id
         $candidates = DB::table('candidate_info')
-            ->select('id','growth_id' ,'name', 'experience', 'skillSet', 'jobTitle', 'team', 'location', 'joiningDate', 'status', 'created_at')
+            ->select('id', 'growth_id', 'name', 'experience', 'skillSet', 'jobTitle', 'team', 'location', 'joiningDate', 'status', 'created_at')
             ->where('growth_id', $titleId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -224,30 +226,42 @@ class GrowthController extends Controller
         $growth->status = $request->input('status');
         $growth->save();
 
-        // Updating or Creating Candidate Info records associated with the Growth user
-        foreach ($request->candidateInfo as $candidate) {
-            $candidateInfo = CandidateInfo::find($candidate['id']);
+    // Get all candidateInfo records associated with the Growth user
+    $existingCandidates = CandidateInfo::where('growth_id', $id)->get();
 
-            if (!$candidateInfo) {
-                // Create a new Candidate Info record if not found
-                $candidateInfo = new CandidateInfo;
-            }
+    // Loop through candidateInfo array 
+    foreach ($request->candidateInfo as $candidate) {
+        $candidateId = isset($candidate['id']) ? $candidate['id'] : null;
+        $existingCandidate = $existingCandidates->where('id', $candidateId)->first();
 
-            // Updating the Candidate Info record
-            $candidateInfo->growth_id = $id;
-            $candidateInfo->name = $candidate['name'];
-            $candidateInfo->experience = $candidate['experience'];
-            $candidateInfo->skillSet = implode(',', $candidate['skillSet']);
-            $candidateInfo->jobTitle = $candidate['jobTitle'];
-            $candidateInfo->team = $candidate['team'];
-            $candidateInfo->location = $candidate['location'];
-            $candidateInfo->joiningDate = $candidate['joiningDate'];
-            $candidateInfo->status = $candidate['status'];
-
-            $candidateInfo->save();
+        if ($existingCandidate) {
+            // Update the existing candidateInfo record
+            $existingCandidate->name = $candidate['name'];
+            $existingCandidate->experience = $candidate['experience'];
+            $existingCandidate->skillSet = implode(',', $candidate['skillSet']);
+            $existingCandidate->jobTitle = $candidate['jobTitle'];
+            $existingCandidate->team = $candidate['team'];
+            $existingCandidate->location = $candidate['location'];
+            $existingCandidate->joiningDate = $candidate['joiningDate'];
+            $existingCandidate->status = $candidate['status'];
+            $existingCandidate->save();
+        } else {
+            // Create a new Candidate Info record if not found
+            $newCandidate = new CandidateInfo;
+            $newCandidate->growth_id = $id;
+            $newCandidate->name = $candidate['name'];
+            $newCandidate->experience = $candidate['experience'];
+            $newCandidate->skillSet = implode(',', $candidate['skillSet']);
+            $newCandidate->jobTitle = $candidate['jobTitle'];
+            $newCandidate->team = $candidate['team'];
+            $newCandidate->location = $candidate['location'];
+            $newCandidate->joiningDate = $candidate['joiningDate'];
+            $newCandidate->status = $candidate['status'];
+            $newCandidate->save();
         }
-         // Check the status value
-         if ($growth->status === 'Sent') {
+    }
+        // Check the status value
+        if ($growth->status === 'Sent') {
             // Fetch email configuration data from database
             $emailConfig = EmailConfiguration::first();
 
@@ -265,21 +279,23 @@ class GrowthController extends Controller
             $formattedDate = date('l d M, Y');
             $formattedSubject = str_replace($dateString, $formattedDate, $subject);
 
-            Mail::send("Mail.candidate_info_added", ['candidateInfo' => $candidateInfo, 'subject' => $formattedSubject, 
-            'greetings' => $greetings, 'signature' => $signature, 'title' => $title], function ($message) use ($mail,$cc , $bcc, $formattedSubject) {
+            Mail::send("Mail.candidate_info_added", [
+                'candidateInfo' => $candidateInfo, 'subject' => $formattedSubject,
+                'greetings' => $greetings, 'signature' => $signature, 'title' => $title
+            ], function ($message) use ($mail, $cc, $bcc, $formattedSubject) {
 
 
-                $message->to(explode(",",$mail));
+                $message->to(explode(",", $mail));
                 // Add CC recipients if any
                 if ($cc !== null) {
-                    $message->cc(explode(",",$cc));
+                    $message->cc(explode(",", $cc));
                 }
 
                 // Add BCC recipients if any
                 if ($bcc !== null) {
-                    $message->bcc(explode(",",$bcc));
+                    $message->bcc(explode(",", $bcc));
                 }
-            
+
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
                 $message->subject($formattedSubject);
             });
@@ -363,7 +379,7 @@ class GrowthController extends Controller
     {
         $candidate = CandidateInfo::findOrFail($id);
         $candidate->delete();
-    
+
         return response()->json(['message' => 'Candidate deleted successfully']);
     }
     public function testEmail()
