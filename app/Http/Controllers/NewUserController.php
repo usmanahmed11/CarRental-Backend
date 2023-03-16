@@ -55,7 +55,7 @@ class NewUserController extends Controller
 
         $mail = $user->email;
         $url = env('FRONTEND_URL') . '/activate-account/' . $token;
-        Mail::send("UserActivation", ['token' => $token, 'url' => $url , 'user' => $user->name], function ($message) use ($mail) {
+        Mail::send("Mail.UserActivation", ['token' => $token, 'url' => $url , 'user' => $user->name], function ($message) use ($mail) {
             $message->to($mail);
             $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
             $message->subject('GrowthTracker Nextbridge User Activation');
