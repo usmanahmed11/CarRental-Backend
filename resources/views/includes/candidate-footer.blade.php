@@ -1,19 +1,7 @@
-<tr style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px">
-    <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px"
-        valign="top">
-        If you encounter any difficulties or
-        have any questions, please do not hesitate to contact us.
-        <br />
-        We are always happy to help!
-    </td>
-
-</tr>
 <tr style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
     <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0;"
         valign="top">
-        <strong>Thanks</strong>,
-        <br>
-        <strong>GrowthTracker</strong>
+
     </td>
 </tr>
 </tbody>
@@ -53,5 +41,7 @@
 <script src="{{ asset('theme/datatables.net-responsive/js/dataTables.responsive.min.js') }}"></script>
 <script src="{{ asset('theme/datatables.net-responsive-bs/js/responsive.bootstrap.js') }}"></script>
 <script src="{{ asset('theme/datatables.net-scroller/js/dataTables.scroller.min.js') }}"></script>
+
 </body>
+
 </html>
