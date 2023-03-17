@@ -101,9 +101,9 @@ class AuthController extends Controller
 
                 'password.string' => 'Password must be a string',
                 'password.min' => 'Password must be at least 8 characters',
-                'password.confirmed' => 'Password confirmation does not match',
+                'password.confirmed' => 'Password and Confirm Password shoud be same',
                 'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-                'password_confirmation.same' => 'Password confirmation does not match',
+                'password_confirmation.same' => 'Password and Confirm Password shoud be same',
             ]);
 
             // If validation fails, return error response with validation errors
@@ -117,7 +117,7 @@ class AuthController extends Controller
             $user->password = bcrypt($request->password);
             $user->save();
             // Return success message upon successful password change
-            return response()->json(['message' => 'Password changed successfully'], 200);
+            return response()->json(['message' => 'Your Password has been updated successfully'], 200);
         } else {
             // If the user is not authenticated, return an error response
             return response()->json(['error' => 'User is Not Authenticated'], 401);
@@ -159,7 +159,7 @@ class AuthController extends Controller
             return response()->json(['message' => $th->getMessage()], 400);
         }
         // Return success response upon successful email send
-        return response()->json(['message' => 'Mail Sent Successfully. Please Check Your Email'], 200);
+        return response()->json(['message' => 'Reset Password link has been sent on your registered email address'], 200);
     }
 
     public function resetPassword(Request $request)
@@ -178,9 +178,9 @@ class AuthController extends Controller
 
             'password.string' => 'Password must be a string',
             'password.min' => 'Password must be at least 8 characters',
-            'password.confirmed' => 'Password confirmation does not match',
+            'password.confirmed' => 'Password and Confirm Password shoud be same',
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-            'password_confirmation.same' => 'Password confirmation does not match',
+            'password_confirmation.same' => 'Password and Confirm Password shoud be same',
         ]);
 
         // If validation fails, return error response with validation errors
@@ -206,7 +206,7 @@ class AuthController extends Controller
         $user->save();
 
         // Return success response upon successful password reset
-        return response()->json(['message' => 'Password reset successfully'], 200);
+        return response()->json(['message' => 'Your Password has been changed successfully'], 200);
     }
 
     public function show()
@@ -268,6 +268,6 @@ class AuthController extends Controller
         }
         // return a success response
         $user->save();
-        return response()->json(['message' => 'Profile Updated Successfully'], 200);
+        return response()->json(['message' => 'Your profile has been updated successfully'], 200);
     }
 }

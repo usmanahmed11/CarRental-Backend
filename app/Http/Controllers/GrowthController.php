@@ -102,7 +102,7 @@ class GrowthController extends Controller
         }
 
         // Return success response
-        return response()->json(['message' => 'Growth Record added successfully'], 200);
+        return response()->json(['message' => 'Record has been added successfully'], 200);
     }
 
 
@@ -174,7 +174,7 @@ class GrowthController extends Controller
         if (!$data) {
             // If the Growth User doesn't exist, return a 404 error response
             return response()->json([
-                'error' => 'Growth User not found'
+                'error' => 'Not able to find any record'
             ], 404);
         }
 
@@ -187,7 +187,7 @@ class GrowthController extends Controller
         // Return a success response with a message indicating that both the Growth User 
         // and related CandidateInfo records were deleted successfully
         return response()->json([
-            'message' => 'Growth record deleted successfully'
+            'message' => 'Record has been deleted successfully'
         ], 200);
     }
 
@@ -217,7 +217,7 @@ class GrowthController extends Controller
 
         // If the Growth user is not found, return error response
         if (!$growth) {
-            return response()->json(['error' => 'Growth User not found'], 404);
+            return response()->json(['error' => 'Not able to find any record'], 404);
         }
 
         // Updating Growth user record
@@ -301,7 +301,7 @@ class GrowthController extends Controller
         }
 
         // Returning success response
-        return response()->json(['message' => 'Growth Record updated successfully.'], 200);
+        return response()->json(['message' => 'Record has been updated successfully'], 200);
     }
 
 
@@ -310,7 +310,7 @@ class GrowthController extends Controller
         $growth = Growth::with('candidateInfo')->find($id);
         // If the growth information of the candidate is not found, return a JSON response
         if (!$growth) {
-            return response()->json(['error' => 'Growth User not found'], 404);
+            return response()->json(['error' => 'Not able to find any record'], 404);
         }
         // If the growth information of the candidate is found, return a JSON response with the growth information and 200 status code
         return response()->json(['growth' => $growth], 200);
@@ -379,7 +379,7 @@ class GrowthController extends Controller
         $candidate = CandidateInfo::findOrFail($id);
         $candidate->delete();
 
-        return response()->json(['message' => 'Candidate deleted successfully']);
+        return response()->json(['message' => 'Record has been deleted successfully']);
     }
     public function testEmail()
     {
