@@ -19,7 +19,6 @@ class NewUserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'email' => 'required|email|unique:users',
-            'password' => ['required', 'string', 'min:8'],
             'role_id' => 'required|exists:roles,id',
         ]);
         // If validation fails, return an error response
@@ -39,6 +38,7 @@ class NewUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'status' =>$request->status,
         ]);
         // Set the user's role_id and save the user
         $user->role_id = $request->role_id;
