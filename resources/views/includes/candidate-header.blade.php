@@ -16,5 +16,5 @@
     <table style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; width: 100%; background-color: #f6f6f6; margin: 0">
         <tbody>
             <tr style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; margin: 0">
-                <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; vertical-align: top; display: block !important; max-width: 900px !important; clear: both !important; margin: 0 auto" width="900" valign="top">
-                    <div style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; max-width: 900px; display: block; margin: 0 auto; padding: 20px">
+                <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; vertical-align: top; clear: both !important; margin: 0 auto" width="900" valign="top">
+                    <div style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 12px; display: block; margin: 0 auto; padding: 20px">

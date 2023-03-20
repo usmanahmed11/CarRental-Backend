@@ -62,7 +62,7 @@ class NewUserController extends Controller
 
         // Return a success response with a message
 
-        return response()->json(['message' => 'Invitation Email has been sent successfully '], 200);
+        return response()->json(['message' => 'New user invitation email has been sent successfully'], 200);
     }
 
 
@@ -108,9 +108,9 @@ class NewUserController extends Controller
 
             'password.string' => 'Password must be a string',
             'password.min' => 'Password must be at least 8 characters',
-            'password.confirmed' => 'Password confirmation does not match',
+            'password.confirmed' => 'Password and Confirm Password shoud be same',
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
-            'password_confirmation.same' => 'Password confirmation does not match',
+            'password_confirmation.same' => 'Password and Confirm Password shoud be same',
         ]);
 
         // If validation fails, return error response with validation errors
@@ -123,7 +123,7 @@ class NewUserController extends Controller
 
         // If the user is not found, return an error message
         if (!$user) {
-            return response()->json(['error' => 'Invalid activation link.'], 400);
+            return response()->json(['error' => 'Invalid or activation link expired.'], 400);
         }
 
         // Update the user's password, set the activation token to null, and mark their email as verified
@@ -132,7 +132,7 @@ class NewUserController extends Controller
         $user->email_verified_at = Carbon::now();
         $user->save();
         // Return a success response with a message
-        return response()->json(['message' => 'Account activated successfully. Now You Can Login With Your New Password'], 200);
+        return response()->json(['message' => 'Your account has been activated successfully, Kindly login to get into the system'], 200);
     }
 
 
@@ -182,7 +182,7 @@ class NewUserController extends Controller
         // Check if the user exists
         if (!$user) {
             return response()->json([
-                'error' => 'User not found'
+                'error' => 'Not able to find any record'
             ], 404);
         }
 
@@ -191,7 +191,7 @@ class NewUserController extends Controller
 
         // Return a success response
         return response()->json([
-            'message' => 'User deleted successfully'
+            'message' => 'Record has been deleted successfully'
         ], 200);
     }
 
@@ -211,7 +211,7 @@ class NewUserController extends Controller
         $user = User::find($id);
         // If the user is not found, return an error response
         if (!$user) {
-            return response()->json(['error' => 'User not found'], 404);
+            return response()->json(['error' => 'Not able to find any record'], 404);
         }
         // Find the role to update
         $role = Role::find($request->role_id);
@@ -226,7 +226,7 @@ class NewUserController extends Controller
         $user->status = $request->input('status');
         $user->save();
         // Return a success message
-        return response()->json(['message' => 'User updated successfully.'], 200);
+        return response()->json(['message' => 'Record has been updated successfully.'], 200);
     }
 
     public function setPasswordToDefault($id)
