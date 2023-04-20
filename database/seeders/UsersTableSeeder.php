@@ -17,17 +17,17 @@ class UsersTableSeeder extends Seeder
      */
     public function run()
     {
-        $adminRoleId = DB::table('roles')->where('role_name', 'Admin')->value('id');
-        User::create([
-            'name' => 'Admin',
-            'email' => 'usman.ahmed@nxb.com.pk',
-            'email_verified_at' => now(),
-            'password' => Hash::make('12345678'),
-            'remember_token' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-            'status' => 'active',
-            'role_id' =>  $adminRoleId,
-        ]);
+        // $adminRoleId = DB::table('roles')->where('role_name', 'Admin')->value('id');
+        // User::create([
+        //     'name' => 'Admin',
+        //     'email' => 'usman.ahmed@nxb.com.pk',
+        //     'email_verified_at' => now(),
+        //     'password' => Hash::make('12345678'),
+        //     'remember_token' => null,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        //     'status' => 'active',
+        //     'role_id' =>  $adminRoleId,
+        // ]);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\sendPasswordResetLink;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -27,11 +27,6 @@ class AuthController extends Controller
             return response()->json(['error' => $validator->errors()], 422);
         }
 
-        // Check if the user is active
-        $user = User::where('email', $request->email)->first();
-        if ($user && $user->status === 'inactive') {
-            return response()->json(['error' => 'User is inactive'], 401);
-        }
 
         // Attempt to authenticate the user with the provided email and password
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
@@ -44,22 +39,73 @@ class AuthController extends Controller
                 return response()->json(['error' => 'User is Not Verified'], 401);
             }
 
-            // Get the role_id of the user
-            $role_id = $user->role_id;
-
+          
             // Create an access token for the authenticated user
             $token = $user->createToken('authToken')->accessToken;
 
 
             // Return a success response with the access token, user's email, and role_id
-            return response()->json(['access_token' => $token, 'user' => $user->email, 'role_id' => $role_id], 200);
+            return response()->json(['access_token' => $token, 'user' => $user->email], 200);
         } else {
             // If authentication fails, return an error response
             return response()->json(['error' => 'Email or Password is Incorrect'], 401);
         }
     }
+    public function register(Request $request)
+    {
+        // Validate the input data using Laravel's built-in validator
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'email' => 'required|email|unique:users',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{};:,<.>]).+$/'
+            ],
+            'password_confirmation' => ['required', 'same:password'],
+        ], [
 
+            'password.string' => 'Password must be a string',
+            'password.min' => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password and Confirm Password shoud be same',
+            'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
+            'password_confirmation.same' => 'Password and Confirm Password shoud be same',
+        ]);
+        
+        // If validation fails, return an error response
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 422);
+        }
 
+        // validate and create new user
+        $user = new User([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+        // save the user
+      
+        $user->save();
+
+        // Create a token for the user and save it
+        $token = $user->createToken('authToken')->accessToken;
+        $user->remember_token = $token;
+        $user->save();
+
+        $mail = $user->email;
+        $url = env('FRONTEND_URL') . '/activate-account/' . $token;
+        Mail::send("Mail.UserActivation", ['token' => $token, 'url' => $url , 'user' => $user->name], function ($message) use ($mail) {
+            $message->to($mail);
+            $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
+            $message->subject('ChatOnix User Activation');
+        });
+
+        // Return a success response with a message
+
+        return response()->json(['message' => 'Registration invitation email has been sent successfully'], 200);
+    }
     public function logout(Request $request)
     {
 
@@ -124,7 +170,18 @@ class AuthController extends Controller
         }
     }
 
+    public function show()
+    {
+        // Get the authenticated user
+        $user = Auth::user();
 
+        // Return the user's name, profile picture, email, role id, and status in a JSON response
+        return response()->json([
+            'name' => $user->name,
+            'profile_picture' => $user->profile_picture,
+            'email' => $user->email,
+        ], 200);
+    }
     public function sendPasswordResetLink(Request $request)
     {
         // Validate the email provided in the request
@@ -152,7 +209,7 @@ class AuthController extends Controller
             Mail::send("Mail.forget", ['token' => $token, 'user' => $user->name], function ($message) use ($mail) {
                 $message->to($mail);
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject('GrowthTracker Nextbridge Forget Password');
+                $message->subject('ChatOnix Forget Password');
             });
         } catch (\Throwable $th) {
             // If sending email fails, return error response with the error message
@@ -209,19 +266,21 @@ class AuthController extends Controller
         return response()->json(['message' => 'Your Password has been changed successfully'], 200);
     }
 
-    public function show()
+    public function activateAccount(Request $request)
     {
-        // Get the authenticated user
-        $user = Auth::user();
 
-        // Return the user's name, profile picture, email, role id, and status in a JSON response
-        return response()->json([
-            'name' => $user->name,
-            'profile_picture' => $user->profile_picture,
-            'email' => $user->email,
-            'role_id' => $user->role_id,
-            'status' => $user->status,
-        ], 200);
+        // Find the user using the activation token
+        $user = User::where('remember_token', $request->token)->first();
+
+        // If the user is not found, return an error message
+        if (!$user) {
+            return response()->json(['error' => 'Invalid or activation link expired.'], 400);
+        }
+        $user->remember_token = null;
+        $user->email_verified_at = Carbon::now();
+        $user->save();
+        // Return a success response with a message
+        return response()->json(['message' => 'Your account has been activated successfully, Kindly login to get into the system'], 200);
     }
 
     public function updateProfile(Request $request)
