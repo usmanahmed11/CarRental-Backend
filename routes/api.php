@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\NewUserController;
+use App\Http\Controllers\TemplateController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -24,16 +25,6 @@ Route::post('/password/email', [AuthController::class, "sendPasswordResetLink"])
 Route::post('/password/reset', [AuthController::class, "resetPassword"])->name('password.reset');
 Route::post('/activateAccount', [AuthController::class, 'activateAccount']);
 
-/* NewUserController  */
-
-Route::post('/newuser', [NewUserController::class, 'register']);
-Route::get('/user-all', [NewUserController::class, 'showUsers']);
-Route::delete('users/{id}', [NewUserController::class, 'destroy']);
-Route::post('users/{id}', [NewUserController::class, 'update']);
-Route::post('/users/{id}/set-password-to-default', [NewUserController::class, 'setPasswordToDefault']);
-Route::get('/roles', [NewUserController::class, 'index']);
-Route::get('/users/{id}/email', [NewUserController::class, 'getEmail']);
-
 Route::group(['middleware' => ['auth:api']], function () {
 
     /* AuthController  */
@@ -42,3 +33,7 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::post('/update-profile', [AuthController::class, 'updateProfile']);
     Route::get('/user', [AuthController::class, 'show']);
 });
+
+
+Route::post('/templates', [TemplateController::class, 'store']);
+Route::get('/show', [TemplateController::class, 'index']);

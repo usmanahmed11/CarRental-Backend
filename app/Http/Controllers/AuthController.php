@@ -220,7 +220,7 @@ class AuthController extends Controller
     }
 
     public function resetPassword(Request $request)
-    {
+    {      
         // Validate the password provided in the request
         $validator = Validator::make($request->all(), [
             'password' => [
