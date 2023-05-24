@@ -5,7 +5,7 @@
             <td style="font-family: Helvetica, 'Open Sans', Arial; box-sizing: border-box; font-size: 22px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #fffefe; margin: 0; padding: 0px; border-bottom: 1px solid #b5b9bd"
                 valign="top">
                 <strong style="padding: 15px; float: left">
-                    <span style="color: #212529">ChatOnix</span>
+                    <span style="color: #212529">Car Rental</span>
                 </strong>
             </td>
         </tr>
@@ -17,7 +17,7 @@
                             <td style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px" valign="top">
                                 Hi , {{ $user }}
                                 <br /><br />
-                                We hope this email finds you well. We would like to extend a warm welcome to ChatOnix, and we are thrilled to have you on board.
+                                We hope this email finds you well. We would like to extend a warm welcome to Car Rental, and we are thrilled to have you on board.
                                 <br /><br />
                                 To get started with your account, kindly activate it by clicking the button provided below:
                             </td>

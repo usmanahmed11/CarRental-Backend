@@ -39,7 +39,7 @@ class AuthController extends Controller
                 return response()->json(['error' => 'User is Not Verified'], 401);
             }
 
-          
+
             // Create an access token for the authenticated user
             $token = $user->createToken('authToken')->accessToken;
 
@@ -73,7 +73,7 @@ class AuthController extends Controller
             'password.regex' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
             'password_confirmation.same' => 'Password and Confirm Password shoud be same',
         ]);
-        
+
         // If validation fails, return an error response
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 422);
@@ -86,7 +86,7 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
         // save the user
-      
+
         $user->save();
 
         // Create a token for the user and save it
@@ -95,12 +95,14 @@ class AuthController extends Controller
         $user->save();
 
         $mail = $user->email;
-        $url = env('FRONTEND_URL') . '/activate-account/' . $token;
-        Mail::send("Mail.UserActivation", ['token' => $token, 'url' => $url , 'user' => $user->name], function ($message) use ($mail) {
+        $url = env('FRONTEND_URL') . '/activate-account?token=' . $token;
+        Mail::send("Mail.UserActivation", ['token' => $token, 'url' => $url, 'user' => $user->name], function ($message) use ($mail) {
             $message->to($mail);
             $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-            $message->subject('ChatOnix User Activation');
+            $message->subject('Car Rental User Activation');
         });
+
+
 
         // Return a success response with a message
 
@@ -209,7 +211,7 @@ class AuthController extends Controller
             Mail::send("Mail.forget", ['token' => $token, 'user' => $user->name], function ($message) use ($mail) {
                 $message->to($mail);
                 $message->from(env('MAIL_FROM_Email'), env('MAIL_FROM_NAME'));
-                $message->subject('ChatOnix Forget Password');
+                $message->subject('Cab Rental Forget Password');
             });
         } catch (\Throwable $th) {
             // If sending email fails, return error response with the error message
@@ -220,7 +222,7 @@ class AuthController extends Controller
     }
 
     public function resetPassword(Request $request)
-    {      
+    {
         // Validate the password provided in the request
         $validator = Validator::make($request->all(), [
             'password' => [

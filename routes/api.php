@@ -3,7 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\TemplateController;
+use App\Http\Controllers\CarController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -35,5 +36,10 @@ Route::group(['middleware' => ['auth:api']], function () {
 });
 
 
-Route::post('/templates', [TemplateController::class, 'store']);
-Route::get('/show', [TemplateController::class, 'index']);
+Route::post('/cars', [CarController::class, 'store']);
+Route::get('/listofcars', [CarController::class, 'index']);
+Route::delete('/cars/{id}', [CarController::class, 'destroy']);
+Route::post('/cars/{id}', [CarController::class, 'update']);
+Route::get('/cars/{id}/show', [CarController::class, 'getCars']);
+Route::post('/payment/initiate', [CarController::class, 'initiatePayment']);
+
