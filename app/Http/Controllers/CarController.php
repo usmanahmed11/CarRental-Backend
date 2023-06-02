@@ -6,10 +6,13 @@ use App\Models\Booking;
 use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use GuzzleHttp\Client;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Illuminate\Support\Facades\Session;
+use Stripe\StripeClient;
 
 class CarController extends Controller
 {
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -106,10 +109,23 @@ class CarController extends Controller
             'picture' => $car->picture
         ]);
     }
-    public function initiatePayment(Request $request)
+
+    public function listofbookings()
     {
-       
-        $validator = Validator::make($request->all(), [
+        $bookings = Booking::get();
+
+        return response()->json($bookings);
+    }
+    public function destroyBookings($id)
+    {
+        $bookings = Booking::find($id);
+        $bookings->delete();
+        return response()->json(['message' => 'Cab Booking deleted successfully']);
+    }
+    public function updateBookings(Request $request, $id)
+    {
+
+        $validatedData = $request->validate([
             'name' => 'required',
             'phone' => 'required',
             'email' => 'required|email',
@@ -117,58 +133,55 @@ class CarController extends Controller
             'return-date' => 'required',
             'cars' => 'required',
             'total-bill' => 'required|numeric',
+
         ]);
-    
+
+        $booking = Booking::findOrFail($id);
+
+        $booking->name = $validatedData['name'];
+        $booking->phone = $validatedData['phone'];
+        $booking->email = $validatedData['email'];
+        $booking->departure_date = $validatedData['departure-date'];
+        $booking->return_date = $validatedData['return-date'];
+        $booking->car = $validatedData['cars'];
+        $booking->total_bill = $validatedData['total-bill'];
+
+        $booking->save();
+
+        return response()->json(['message' => 'Booking updated successfully'], 200);
+    }
+
+    public function getBookings($id)
+    {
+        $booking = Booking::findOrFail($id);
+        return response()->json([
+            'name' => $booking->name,
+            'phone' => $booking->phone,
+            'email' => $booking->email,
+            'departure_date' => $booking->departure_date,
+            'return_date' => $booking->return_date,
+            'car' => $booking->car,
+            'total_bill' => $booking->total_bill,
+
+        ]);
+    }
+
+    public function checkout(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'departure-date' => 'required',
+            'return-date' => 'required',
+            'cars' => 'required',
+            'totalBill' => 'required|numeric',
+        ]);
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
-    
-       
-        $endpointUrl = 'https://api.easypaisa.com.pk/payment/initiate';
-    
-       
-        $requestBody = [
-            'name' => $request->input('name'),
-            'phone' => $request->input('phone'),
-            'email' => $request->input('email'),
-            'amount' => $request->input('total-bill'),
-            'currency' => 'PKR',
-            
-        ];
-    
-        $clientId = '60333e97-b741-41ec-8d09-f5d36e941af4';
-        $clientSecret = 'J6aB0fC8yH2sW6cX2jD5hQ2lS1yR0oS7yG6pC1sF8vJ5qA5yF5';
-    
-        
-        $headers = [
-            'Content-Type' => 'application/json',
-            'Authorization' => 'Bearer ' . $clientId . ':' . $clientSecret,
-        ];
-        $body = json_encode($requestBody);
-    
-       
-        $client = new Client();
-    
-        
-        $response = $client->post($endpointUrl, [
-            'headers' => $headers,
-            'body' => $body,
-        ]);
-    
-       
-        if ($response->getStatusCode() !== 200) {
-            return response()->json(['error' => 'Payment failed. Error: ' . $response->getBody()], 500);
-        }
-    
-        
-        $responseData = json_decode($response->getBody(), true);
-    
-      
-        if ($responseData['status'] !== 'SUCCESS') {
-            return response()->json(['error' => 'Payment failed. Error: ' . $responseData['message']], 500);
-        }
-    
-        
+
         $booking = Booking::create([
             'name' => $request->input('name'),
             'phone' => $request->input('phone'),
@@ -176,14 +189,96 @@ class CarController extends Controller
             'departure_date' => $request->input('departure-date'),
             'return_date' => $request->input('return-date'),
             'car' => $request->input('cars'),
-            'total_bill' => $request->input('total-bill'),
+            'total_bill' => $request->input('totalBill'),
         ]);
-    
-        return response()->json(['message' => 'Payment initiated and booking created successfully', 'booking' => $booking]);
+
+
+        $provider = new PayPalClient([]);
+
+        $token = $provider->getAccessToken();
+        $provider->setAccessToken($token);
+
+        $order = $provider->createOrder([
+            "intent" => "CAPTURE",
+            "purchase_units" => [
+                [
+                    "amount" => [
+                        "currency_code" => 'USD',
+                        'value' => $request->totalBill
+                    ]
+                ]
+            ],
+            'application_context' => [
+                'cancel_url' => route('payment.cancel'),
+                'return_url' => route('payment.success', ['bookingId' => $booking->id])
+            ]
+        ]);
+
+        return response()->json(['redirect_url' => $order['links'][1]['href']]);
     }
-    
+
+    public function paymentSuccess(Request $request)
+    {
+        $bookingId = $request->input('bookingId');
+
+        $booking = Booking::find($bookingId);
+
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found'], 404);
+        }
+
+        $booking->payment_status = 'completed';
+        $booking->save();
+
+        $frontendUrl = rtrim(env('FRONTEND_URL'), '/') . '/car-booking';
+
+
+        $redirectUrl = $frontendUrl . '?success=truee';
+
+        return redirect()->away($redirectUrl);
+    }
+
+
+    public function paymentCancel()
+    {
+        $frontendUrl = rtrim(env('FRONTEND_URL'), '/') . '/car-booking';
+
+
+        $redirectUrl = $frontendUrl . '?success=falsee';
+
+        return redirect()->away($redirectUrl);
+    }
+
+    public function stripePayment(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'phone' => 'required',
+            'email' => 'required|email',
+            'departureDateTime' => 'required',
+            'returnDateTime' => 'required',
+            'car' => 'required',
+            'totalBill' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        $booking = Booking::create([
+            'name' => $request->input('name'),
+            'phone' => $request->input('phone'),
+            'email' => $request->input('email'),
+            'departure_date' => $request->input('departureDateTime'),
+            'return_date' => $request->input('returnDateTime'),
+            'car' => $request->input('car'),
+            'total_bill' => $request->input('totalBill'),
+        ]);
+
+        $booking->payment_status = 'completed';
+        $booking->save();
+
+        return response()->json(['message' => 'Booking successful', 'booking' => $booking], 200);
+    }
 }
-
-
-// $clientId = '60333e97-b741-41ec-8d09-f5d36e941af4';
-// $clientSecret = 'J6aB0fC8yH2sW6cX2jD5hQ2lS1yR0oS7yG6pC1sF8vJ5qA5yF5';

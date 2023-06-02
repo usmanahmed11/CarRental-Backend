@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('car');
             $table->decimal('total_bill', 10, 2);
             $table->timestamps();
+            $table->string('payment_status')->default('pending');
         });
     }
 

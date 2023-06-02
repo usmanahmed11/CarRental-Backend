@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\CarController;
-
+use App\Http\Controllers\ServiceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,5 +41,27 @@ Route::get('/listofcars', [CarController::class, 'index']);
 Route::delete('/cars/{id}', [CarController::class, 'destroy']);
 Route::post('/cars/{id}', [CarController::class, 'update']);
 Route::get('/cars/{id}/show', [CarController::class, 'getCars']);
-Route::post('/payment/initiate', [CarController::class, 'initiatePayment']);
+Route::get('/listofcarbookings', [CarController::class, 'listofbookings']);
+Route::delete('/bookings/{id}', [CarController::class, 'destroyBookings']);
+Route::post('/bookings/{id}', [CarController::class, 'updateBookings']);
+Route::get('/bookings/{id}/show', [CarController::class, 'getBookings']);
 
+
+Route::post('/payment/initiate', [CarController::class, 'checkout'])->name('payment.initiate');
+Route::get('/payment/success', [CarController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/cancel', [CarController::class, 'paymentCancel'])->name('payment.cancel');
+
+Route::post('/paymentStripe', [CarController::class, 'stripePayment']);
+
+Route::post('/blogs', [BlogController::class, 'create']);
+Route::get('/listofblogs', [BlogController::class, 'index']);
+Route::delete('/blogs/{id}', [BlogController::class, 'destroy']);
+Route::get('/blogs/{id}/show', [BlogController::class, 'getBlogs']);
+Route::post('/blogs/{id}', [BlogController::class, 'update']);
+
+
+Route::post('/services', [ServiceController::class, 'create']);
+Route::get('/listofservices', [ServiceController::class, 'index']);
+Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+Route::get('/services/{id}/show', [ServiceController::class, 'getServices']);
+Route::post('/services/{id}', [ServiceController::class, 'update']);
