@@ -7,8 +7,10 @@ use App\Models\Car;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
-use Illuminate\Support\Facades\Session;
-use Stripe\StripeClient;
+use Stripe\Stripe;
+use Stripe\Product;
+use Stripe\Price;
+use Stripe\Checkout\Session;
 
 class CarController extends Controller
 {
@@ -230,28 +232,29 @@ class CarController extends Controller
         $booking->payment_status = 'completed';
         $booking->save();
 
-        $frontendUrl = rtrim(env('FRONTEND_URL'), '/') . '/car-booking';
+        $frontendUrl = rtrim(env('FRONTEND_URL'));
 
-
-        $redirectUrl = $frontendUrl . '?success=truee';
+        $redirectUrl = $frontendUrl . '?success=true';
 
         return redirect()->away($redirectUrl);
     }
+
 
 
     public function paymentCancel()
     {
-        $frontendUrl = rtrim(env('FRONTEND_URL'), '/') . '/car-booking';
+        $frontendUrl = rtrim(env('FRONTEND_URL'));
 
 
-        $redirectUrl = $frontendUrl . '?success=falsee';
+
+        $redirectUrl = $frontendUrl . '?success=false';
 
         return redirect()->away($redirectUrl);
     }
 
-    public function stripePayment(Request $request)
-    {
 
+    public function stripePaymentt(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'phone' => 'required',
@@ -276,9 +279,64 @@ class CarController extends Controller
             'total_bill' => $request->input('totalBill'),
         ]);
 
+
+        $totalBill = $request->input('totalBill');
+        Stripe::setApiKey(env('STRIPE_SECRET_KEY'));
+
+        $product = Product::create([
+            'name' => $request->input('car')
+        ]);
+
+        $price = Price::create([
+            'product' => $product->id,
+            'unit_amount' => $totalBill * 100,
+            'currency' => 'usd',
+        ]);
+
+        $session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [
+                [
+                    'price' => $price->id,
+                    'quantity' => 1,
+                ],
+            ],
+            'mode' => 'payment',
+            'success_url' => route('payment.success', ['bookingId' => $booking->id]),
+            'cancel_url' => route('payment.cancel')
+        ]);
+
+        return response()->json(['sessionId' => $session->id], 200);
+    }
+    public function stripePaymentSuccess(Request $request)
+    {
+        $bookingId = $request->input('bookingId');
+
+        $booking = Booking::find($bookingId);
+
+        if (!$booking) {
+            return response()->json(['error' => 'Booking not found'], 404);
+        }
+
         $booking->payment_status = 'completed';
         $booking->save();
 
-        return response()->json(['message' => 'Booking successful', 'booking' => $booking], 200);
+        $frontendUrl = rtrim(env('FRONTEND_URL'));
+
+
+
+        $redirectUrl = $frontendUrl . '?success=true';
+
+        return redirect()->away($redirectUrl);
+    }
+    public function stripePaymentCancel()
+    {
+        $frontendUrl = rtrim(env('FRONTEND_URL'));
+
+
+
+        $redirectUrl = $frontendUrl . '?success=false';
+
+        return redirect()->away($redirectUrl);
     }
 }

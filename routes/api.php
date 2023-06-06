@@ -51,7 +51,10 @@ Route::post('/payment/initiate', [CarController::class, 'checkout'])->name('paym
 Route::get('/payment/success', [CarController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('/payment/cancel', [CarController::class, 'paymentCancel'])->name('payment.cancel');
 
-Route::post('/paymentStripe', [CarController::class, 'stripePayment']);
+Route::post('/stripe-payment', [CarController::class, 'stripePaymentt']);
+Route::get('/payment/success', [CarController::class, 'stripePaymentSuccess'])->name('payment.success');
+Route::get('/payment/cancel', [CarController::class, 'stripePaymentCancel'])->name('payment.cancel');
+
 
 Route::post('/blogs', [BlogController::class, 'create']);
 Route::get('/listofblogs', [BlogController::class, 'index']);
